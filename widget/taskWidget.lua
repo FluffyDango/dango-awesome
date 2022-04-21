@@ -1,11 +1,6 @@
 local awful = require('awful')
 local gears = require('gears')
 local wibox = require('wibox')
-local beautiful = require('beautiful')
-local gears = require('gears')
-
-local wait = false
-local released = false
 
 local taskPopup = awful.popup {
     widget = awful.widget.tasklist {
@@ -18,7 +13,7 @@ local taskPopup = awful.popup {
         },
         layout   = {
             spacing = 5,
-            forced_num_rows = 2,
+            forced_num_rows = 1,
             layout = wibox.layout.grid.horizontal
         },
         widget_template = {
@@ -62,30 +57,5 @@ local taskPopup = awful.popup {
     visible      = false,
     type = "desktop"  -- setting the type to desktop makes picom ignore it
 }
-
-function taskPopup:show(bool)
-    if bool then
-        wait = true
-        released = false
-        gears.timer.start_new(0.2, 
-        function()
-            if not released then
-                self.visible = not self.visible
-                wait = false
-            end
-        end)
-    else
-        released = true
-        if not wait then
-            self.visible = not self.visible
-        end
-    end
-end
-
-function taskPopup:select_next()
-    for client in awful.screen.focused().selected_tags.clients() do
-        log_this("title", c)
-    end
-end
 
 return taskPopup

@@ -51,7 +51,8 @@ local awesome_overrides =
   theme.menu_width = dpi(160)
 
   -- Tooltips
-  theme.tooltip_bg = '#232323'
+  --theme.tooltip_bg = '#232323'
+  theme.tooltip_bg = '#5c5c5cCC'
   --theme.tooltip_border_color = '#232323'
   theme.tooltip_border_width = 0
   theme.tooltip_shape = function(cr, w, h)
@@ -67,6 +68,7 @@ local awesome_overrides =
 
   theme.taglist_bg_empty = theme.background.hue_800
   theme.taglist_bg_occupied = theme.background.hue_800
+  theme.taglist_bg_urgent = "0" -- don't draw urgent windows
   theme.taglist_bg_urgent =
     'linear:0,0:' ..
     dpi(40) ..
@@ -94,8 +96,6 @@ local awesome_overrides =
   theme.tasklist_fg_focus = '#DDDDDD'
   theme.tasklist_fg_urgent = theme.fg_normal
   theme.tasklist_fg_normal = '#AAAAAA'
-
-  theme.icon_theme = 'Papirus-Dark'
 end
 return {
   theme = theme,

@@ -72,6 +72,12 @@ _G.client.connect_signal(
   end
 )
 
+--if awful.client.focus.history.is_enabled() then
+--    log_this("yes")
+--else
+--    log_this("no")
+--end
+
 -- local filetxt = io.open("/home/renaldas/.config/awesome/variables.txt", "w+")
 -- for _, c in ipairs(client.get()) do
 --     filetxt:write(c.window .. '\n')

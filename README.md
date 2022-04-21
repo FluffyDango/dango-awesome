@@ -1,5 +1,5 @@
 ## Material and Mouse driven theme for [AwesomeWM 4.3](https://awesomewm.org/)
-### Original design by PapyElGringo, I modified it removing sidebar and condensing the bars to a single top panel. 
+### Original design by PapyElGringo, forked from ChrisTitusTech. 
 
 Note: This fork focuses on streamlining the config and adding some Quality of Life touches to the theme.
 

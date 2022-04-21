@@ -21,6 +21,8 @@ theme.background = mat_colors.blue_grey
 theme.background.hue_800 = '#192933'
 theme.background.hue_900 = '#121e25'
 
+theme.tooltip_bg = '#FFFFFF'
+
 local awesome_overrides = function(theme)
   --
 end

@@ -160,9 +160,9 @@ local TopPanel = function(s)
       nil,
       {
         layout = wibox.layout.fixed.horizontal,
-        battery,
         KeyBoard(s),
         wibox.container.margin(systray, dpi(6), dpi(3), dpi(6), dpi(3)),
+        battery,
         -- Layout box
         LayoutBox(s),
         -- Clock

@@ -33,7 +33,7 @@ local widget =
   layout = wibox.layout.fixed.horizontal
 }
 
-local widget_button = clickable_container(wibox.container.margin(widget, dpi(14), dpi(14), dpi(6), dpi(6)))
+local widget_button = clickable_container(wibox.container.margin(widget, dpi(3), dpi(3), dpi(7), dpi(9)))
 widget_button:buttons(
   gears.table.join(
     awful.button(
@@ -136,6 +136,7 @@ watch(
 
     widget.icon:set_image(PATH_TO_ICONS .. batteryIconName .. '.svg')
     -- Update popup text
+    --battery_popup.text = string.gsub(stdout, '\n$', '')
     battery_popup.text = string.gsub(stdout, '\n$', '')
     collectgarbage('collect')
   end,

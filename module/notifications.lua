@@ -52,11 +52,12 @@ do
   )
 end
 
-function log_this(title, txt)
+function log_this(text, title)
+  title = title or ""
   naughty.notify(
     {
-      title = 'log: ' .. title,
-      text = txt
+      title = 'Log: ' .. title,
+      text = text
     }
   )
 end

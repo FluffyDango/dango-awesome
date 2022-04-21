@@ -5,11 +5,15 @@ local hotkeys_popup = require('awful.hotkeys_popup').widget
 local taskPopup = require('widget.taskWidget')
 local switcher = require('widget.window-switcher')
     switcher.settings.preview_box_title_font = { beautiful.font, 'italic', 'normal' }
+    --switcher.settings.cycle_raise_client = false
 
 local modkey = require('configuration.keys.mod').modKey
 local altkey = require('configuration.keys.mod').altKey
 local apps = require('configuration.apps')
 local languages = require('configuration.languages')
+
+local Xscreen1 = 'off'
+local Xscreen2 = 'auto'
 
 -- Key bindings
 local globalKeys =
@@ -55,29 +59,6 @@ local globalKeys =
     awful.client.urgent.jumpto,
     {description = 'jump to urgent client', group = 'client'}
   ),
-
---  awful.key(
---    {},
---    'Alt_L',
---    function()
---      taskPopup:show(true)
---    end
---  ),
---  awful.key(
---    {'Mod1'},
---    'Alt_L',
---    nil,
---    function()
---      taskPopup:show(false)
---    end
---  ),
---  awful.key(
---    {},
---    'Tab',
---    function()
---        taskPopup:select_next()
---    end
---  ),
 
   awful.key(
     {altkey},
@@ -132,8 +113,7 @@ local globalKeys =
     end,
     {description = 'switch to headphones', group = 'hotkeys'}
   ),
-  
-  -- Emoji Picker
+
   awful.key(
     {modkey},
     'a',
@@ -141,6 +121,33 @@ local globalKeys =
       awful.util.spawn_with_shell('ibus emoji')
     end,
     {description = 'Open the ibus emoji picker to copy an emoji to your clipboard', group = 'hotkeys'}
+  ),
+  
+  awful.key(
+    {modkey, 'Shift'},
+    'F1',
+    function()
+      if Xscreen1 == 'auto' then 
+          Xscreen1 = 'off'
+      else
+          Xscreen1 = 'auto'
+      end
+      awful.spawn('xrandr --output eDP-1-1 --' .. Xscreen1)
+    end,
+    {description = 'Switch off or on screen 1', group = 'hotkeys'}
+  ),
+  awful.key(
+    {modkey, 'Shift'},
+    'F2',
+    function()
+      if Xscreen2 == 'auto' then 
+          Xscreen2 = 'off'
+      else
+          Xscreen2 = 'auto'
+      end
+      awful.spawn('xrandr --output HDMI-0 --' .. Xscreen2)
+    end,
+    {description = 'Switch off or on screen 2', group = 'hotkeys'}
   ),
   
   -- Lock screen
