@@ -5,7 +5,6 @@ local hotkeys_popup = require('awful.hotkeys_popup').widget
 local taskPopup = require('widget.taskWidget')
 local switcher = require('widget.window-switcher')
     switcher.settings.preview_box_title_font = { beautiful.font, 'italic', 'normal' }
-    --switcher.settings.cycle_raise_client = false
 
 local modkey = require('configuration.keys.mod').modKey
 local altkey = require('configuration.keys.mod').altKey
@@ -99,7 +98,7 @@ local globalKeys =
     {'Control', 'Shift'},
     'F1',
     function()
-       awful.spawn.with_shell("pactl set-default-sink alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo")
+       awful.spawn.with_shell("pactl set-default-sink alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo; " .. "pactl set-default-source alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback")
     end,
     {description = 'switch to speakers', group = 'hotkeys'}
   ),
@@ -109,7 +108,7 @@ local globalKeys =
     {'Control', 'Shift'},
     'F2',
     function()
-       awful.spawn.with_shell("pactl set-default-sink alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink")
+       awful.spawn.with_shell("pactl set-default-sink alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink; " .. "pactl set-default-source alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__source")
     end,
     {description = 'switch to headphones', group = 'hotkeys'}
   ),
@@ -132,7 +131,7 @@ local globalKeys =
       else
           Xscreen1 = 'auto'
       end
-      awful.spawn('xrandr --output eDP-1-1 --' .. Xscreen1)
+      awful.spawn('xrandr --output eDP-1 --' .. Xscreen1)
     end,
     {description = 'Switch off or on screen 1', group = 'hotkeys'}
   ),
@@ -197,22 +196,31 @@ local globalKeys =
   ),
 
 
-  awful.key(
-    {},
-    'XF86MonBrightnessUp',
-    function()
-      awful.spawn('xbacklight -inc 10')
-    end,
-    {description = '+10%', group = 'hotkeys'}
-  ),
+ -- awful.key(
+ --   {},
+ --   'XF86MonBrightnessUp',
+ --   function()
+ --     awful.spawn('xbacklight -inc 10')
+ --   end,
+ --   {description = '+10%', group = 'hotkeys'}
+ -- ),
+
+ -- awful.key(
+ --   {},
+ --   'XF86MonBrightnessDown',
+ --   function()
+ --     awful.spawn('xbacklight -dec 10')
+ --   end,
+ --   {description = '-10%', group = 'hotkeys'}
+ -- ),
 
   awful.key(
-    {},
-    'XF86MonBrightnessDown',
+    {modkey},
+    'p',
     function()
-      awful.spawn('xbacklight -dec 10')
+        awful.spawn("passmenu -fn 'Roboto-14'")
     end,
-    {description = '-10%', group = 'hotkeys'}
+    {description = 'dmenu for pass', group = 'hotkeys'}
   ),
   
   
@@ -262,13 +270,27 @@ local globalKeys =
     {modkey},
     'r',
     function()
-      awful.spawn('rofi -combi-modi drun,window -show combi -modi combi')
+      awful.spawn(apps.default.rofi)
     end,
     {description = 'Open Rofi menu', group = 'launcher'}
   ),
   
   
   -------------------------------  LAYOUT  ---------------------------------------------------
+  awful.key(
+    {modkey},
+    'Up',
+    function()
+        local c = client.focus
+        local s = c.screen.workarea
+        c.x = s.x
+        c.y = s.y
+        c.width = s.width
+        c.height = s.height
+    end,
+    {description = 'Resize window to use all of the workarea', group = 'layout'}
+  ),
+
   awful.key(
     {altkey, 'Shift'},
     'Right',

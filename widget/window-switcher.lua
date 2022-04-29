@@ -27,8 +27,6 @@ local unpack = unpack or table.unpack
 
 local _M = {}
 
---	preview_box_bg = "#333333CC",
---	preview_box_title_color = {150, 150, 150, 0.8},
 -- default settings
 
 local settings = {
@@ -61,7 +59,6 @@ _M.preview_wbox.border_color = settings.preview_box_border
 _M.preview_widgets = {}
 
 _M.altTabTable = {}
---_M.altTabIndex = 1
 local idx = 1
 _M.historyTable = {}
 
@@ -111,8 +108,6 @@ _M.noicon = _M.path .. "noicon.png"
 --            forced_height   = 120,
 --            widget          = wibox.container.background,
 --            create_callback = function(self, c, index, objects) --luacheck: no unused
---                self:get_children_by_id("clienticon")[1].client = c
---                self:get_children_by_id("clienttext")[1].text = c.class
 --            end,
 --        },
 --    },
@@ -124,6 +119,38 @@ _M.noicon = _M.path .. "noicon.png"
 --    visible      = false,
 --    type = "desktop"  -- setting the type to desktop makes picom ignore it
 --}
+
+--local previewWidget = wibox()
+
+local previewWidget = wibox ({
+    widget = wibox.widget {
+        {
+            widget = wibox.widget {
+                {
+                    widget = awful.widget.clienticon,
+                    client = "",
+                    id = "clientIcon"
+                },
+                {
+                    widget = wibox.widget.textbox,
+                    id = "titleText"
+                },
+                nil
+            },
+            layout = wibox.layout.align.horizontal,
+            id = "titleBox"
+        },
+        {
+            widget = wibox.widget.imagebox,
+            id = "clientImage"
+        },
+        nil
+    },
+    id = "previewBox",
+    layout = wibox.layout.align.vertical,
+    border_width = 10,
+    border_color = "FF0000",
+})
 
 -- this function returns the list of clients to be shown.
 local function getClients()
@@ -252,9 +279,6 @@ local function cyclePreview(dir)
         end
     end
 
-   -- for i=1, #awful.client.focus.history.list do
-   --     log_this(tostring(i))
-   -- end
 	idx = idx + dir
 	if idx > #_M.altTabTable then
 		idx = 1 -- wrap around
@@ -262,7 +286,6 @@ local function cyclePreview(dir)
 		idx = #_M.altTabTable -- wrap around
 	end
 
-    --log_this(tostring(idx))
     -- Update selected client
     _M.preview()
 
@@ -307,125 +330,124 @@ function _M.preview()
 	for i = 1, #_M.altTabTable do
 		local c = _M.altTabTable[_M.historyTable[i]].client
 
-		_M.preview_widgets[i] = wibox.widget.base.make_widget()
-		_M.preview_widgets[i].fit = function(preview_widget, width, height)
-			return w, h
-		end
-		_M.preview_widgets[i].draw = function(preview_widget, preview_wbox, cr, width, height)
-            -- a is the scale of client image
-			local a = 0.8
-            -- overlay is the opacity of blackness on client images
-		--	local overlay = 0.6
-			local fontSize = smallFont
-			if c == _M.altTabTable[_M.historyTable[idx]].client then
-				a = 0.9
-			--	overlay = 0
-				fontSize = bigFont
-			end
-
-            -- sx and sy means to scale and tx and ty means to move
-			local sx, sy, tx, ty
-
-			-- Icons
-			local icon
-			if c.icon == nil then
-				icon = gears.surface(gears.surface.load(_M.noicon))
-			else
-				icon = gears.surface(c.icon)
-			end
-
-			local iconboxWidth = 1 * textboxHeight
-			local iconboxHeight = iconboxWidth
-
-			-- Titles
-            -- select_font_face: family, slant, weight
-            -- unpack is a lua keyword
-        	cr:select_font_face(unpack(settings.preview_box_title_font))
-        	cr:set_font_face(cr:get_font_face())
-			cr:set_font_size(fontSize)
-
-			text = createPreviewText(c)
-			textWidth = cr:text_extents(text).width
-			textHeight = cr:text_extents(text).height
-
-			local titleboxWidth = textWidth + iconboxWidth
-			local titleboxHeight = textboxHeight
-
-			-- Draw icons
-			tx = (w - titleboxWidth) / 2
-            ty = 20
-			sx = iconboxWidth / icon.width
-			sy = iconboxHeight  / icon.height
-
-            -- translate means to move the context (x + tx, y + ty)
-			cr:translate(tx, ty)
-            -- scale so the icon is not too small or too large
-			cr:scale(sx, sy)
-            -- 0 and 0 is the coordinates x and y
-			cr:set_source_surface(icon, 0, 0)
-			cr:paint()
-
-            -- Restore scaling (scaling is additive)
-            -- cr:scale(sx, sy) -> cr:scale(sx*1/sx, sy*1/sy)
-			cr:scale(1/sx, 1/sy)
-            -- Go back to where we started
-			cr:translate(-tx, -ty)
-
-			-- Draw titles
-			tx = tx + iconboxWidth
-			ty = textboxHeight + iconboxHeight / 4
-			cr:set_source_rgba(unpack(settings.preview_box_title_color))
-            -- Moves cairo path
-			cr:move_to(tx, ty)
-            -- Draws the text
-			cr:show_text(text)
-            -- A drawing operator that strokes the current path according to the current
-            -- line width, line join, line cap, and dash settings.
-            -- After cairo_stroke(), the current path will be cleared from the cairo context.
-			cr:stroke()
-
-			-- Draw previews content (images)
-			local cg = c:geometry()
-			if cg.width > cg.height then
-				sx = a * w / cg.width
-				sy = math.min(sx, a * h / cg.height)
-			else
-				sy = a * h / cg.height
-				sx = math.min(sy, a * h / cg.width)
-			end
-
-			tx = (w - sx * cg.width) / 2
-			ty = (h - sy * cg.height) / 2 + textboxHeight
-
-            -- Client image
-			local content = gears.surface(c.content)
-			cr:translate(tx, ty)
-			cr:scale(sx, sy)
-			cr:set_source_surface(content, 0, 0)
-			cr:paint()
-            -- This function finishes the surface and drops all references to external resources.
-            -- For example, for the Xlib backend it means that cairo will no longer access the drawable, which can be freed. 
-			content:finish()
-
-			-- Overlays
-		--	cr:scale(1/sx, 1/sy)
-		--	cr:translate(-tx, -ty)
-            -- Set a black background with opacity(overlay)
-		--	cr:set_source_rgba(0,0,0,overlay)
-		--	cr:rectangle(tx, ty, sx * cg.width, sy * cg.height)
-		--	cr:fill()
-		end
+		--_M.preview_widgets[i] = wibox.widget.base.make_widget()
+        --local something = previewWidget
+        --local clientIcon = previewWidget:get_children_by_id("clientIcon")[1]
+        --local clientText = _M.preview_widgets[i]:get_children_by_id("titleText")[1]
+        --clientIcon.client = c
+        --clientText.text = c.class
+--		_M.preview_widgets[i].draw = function(preview_widget, preview_wbox, cr, width, height)
+--            -- a is the scale of client image
+--			local a = 0.8
+--			local fontSize = smallFont
+--			if c == _M.altTabTable[_M.historyTable[idx]].client then
+--				a = 0.9
+--				fontSize = bigFont
+--			end
+--
+--            -- sx and sy means to scale and tx and ty means to move
+--			local sx, sy, tx, ty
+--
+--			-- Icons
+--			local icon
+--			if c.icon == nil then
+--				icon = gears.surface(gears.surface.load(_M.noicon))
+--			else
+--				icon = gears.surface(c.icon)
+--			end
+--
+--			local iconboxWidth = 1 * textboxHeight
+--			local iconboxHeight = iconboxWidth
+--
+--			-- Titles
+--            -- select_font_face: family, slant, weight
+--            -- unpack is a lua keyword
+--        	cr:select_font_face(unpack(settings.preview_box_title_font))
+--        	cr:set_font_face(cr:get_font_face())
+--			cr:set_font_size(fontSize)
+--
+--			text = createPreviewText(c)
+--			textWidth = cr:text_extents(text).width
+--			textHeight = cr:text_extents(text).height
+--
+--			local titleboxWidth = textWidth + iconboxWidth
+--			local titleboxHeight = textboxHeight
+--
+--			-- Draw icons
+--			tx = (w - titleboxWidth) / 2
+--            ty = 20
+--			sx = iconboxWidth / icon.width
+--			sy = iconboxHeight  / icon.height
+--
+--            -- translate means to move the context (x + tx, y + ty)
+--			cr:translate(tx, ty)
+--            -- scale so the icon is not too small or too large
+--			cr:scale(sx, sy)
+--            -- 0 and 0 is the coordinates x and y
+--			cr:set_source_surface(icon, 0, 0)
+--			cr:paint()
+--
+--            -- Restore scaling (scaling is additive)
+--            -- cr:scale(sx, sy) -> cr:scale(sx*1/sx, sy*1/sy)
+--			cr:scale(1/sx, 1/sy)
+--            -- Go back to where we started
+--			cr:translate(-tx, -ty)
+--
+--			-- Draw titles
+--			tx = tx + iconboxWidth
+--			ty = textboxHeight + iconboxHeight / 4
+--			cr:set_source_rgba(unpack(settings.preview_box_title_color))
+--            -- Moves cairo path
+--			cr:move_to(tx, ty)
+--            -- Draws the text
+--			cr:show_text(text)
+--            -- A drawing operator that strokes the current path according to the current
+--            -- line width, line join, line cap, and dash settings.
+--            -- After cairo_stroke(), the current path will be cleared from the cairo context.
+--			cr:stroke()
+--
+--			-- Draw previews content (images)
+--			local cg = c:geometry()
+--			if cg.width > cg.height then
+--				sx = a * w / cg.width
+--				sy = math.min(sx, a * h / cg.height)
+--			else
+--				sy = a * h / cg.height
+--				sx = math.min(sy, a * h / cg.width)
+--			end
+--
+--			tx = (w - sx * cg.width) / 2
+--			ty = (h - sy * cg.height) / 2 + textboxHeight
+--
+--            -- Client image
+--			local content = gears.surface(c.content)
+--			cr:translate(tx, ty)
+--			cr:scale(sx, sy)
+--			cr:set_source_surface(content, 0, 0)
+--			cr:paint()
+--            -- This function finishes the surface and drops all references to external resources.
+--            -- For example, for the Xlib backend it means that cairo will no longer access the drawable, which can be freed. 
+--			content:finish()
+--
+--			-- Overlays
+--		--	cr:scale(1/sx, 1/sy)
+--		--	cr:translate(-tx, -ty)
+--            -- Set a black background with opacity(overlay)
+--		--	cr:set_source_rgba(0,0,0,overlay)
+--		--	cr:rectangle(tx, ty, sx * cg.width, sy * cg.height)
+--		--	cr:fill()
+--		end
 	end
-
-	--layout
-	local preview_layout = wibox.layout.fixed.horizontal()
-
-    -- Add everything together
-	for i = 1, #_M.altTabTable do
-		preview_layout:add(_M.preview_widgets[i])
-	end
-
-	_M.preview_wbox:set_widget(preview_layout)
+--
+--	--layout
+--	local preview_layout = wibox.layout.fixed.horizontal()
+--
+--    -- Add everything together
+--	for i = 1, #_M.altTabTable do
+--		preview_layout:add(_M.preview_widgets[i])
+--	end
+--
+--	_M.preview_wbox:set_widget(preview_layout)
 end
 
 
@@ -447,12 +469,12 @@ function switch(dir, mod_key1, release_key, mod_key2, key_switch)
 	end
 
 	-- preview delay timer
-	local previewDelayTimer = gears.timer({timeout = (settings.preview_box_delay / 1000)})
-	previewDelayTimer:connect_signal("timeout", function()
-		previewDelayTimer:stop()
-		showPreview()
-	end)
-	previewDelayTimer:start()
+--	local previewDelayTimer = gears.timer({timeout = (settings.preview_box_delay / 1000)})
+--	previewDelayTimer:connect_signal("timeout", function()
+--		previewDelayTimer:stop()
+--		showPreview()
+--	end)
+--	previewDelayTimer:start()
 
 	-- Now that we have collected all windows, we should run a keygrabber
 	-- as long as the user is alt-tabbing:
@@ -463,8 +485,8 @@ function switch(dir, mod_key1, release_key, mod_key2, key_switch)
 				if (key == release_key) and event == "release" then
 					if _M.preview_wbox.visible then
 						_M.preview_wbox.visible = false
-					else
-						previewDelayTimer:stop()
+					--else
+						--previewDelayTimer:stop()
 					end
 
 					-- Raise clients in order to restore history
@@ -484,18 +506,21 @@ function switch(dir, mod_key1, release_key, mod_key2, key_switch)
 
                     idx = 1
 					-- restore minimized clients
-					for i = 1, #_M.altTabTable do
-						if i ~= _M.historyTable[idx] and _M.altTabTable[i].minimized then
-							_M.altTabTable[i].client.minimized = true
-						end
-						_M.altTabTable[i].client.opacity = _M.altTabTable[i].opacity
-					end
+				--	for i = 1, #_M.altTabTable do
+				--		if i ~= _M.historyTable[idx] and _M.altTabTable[i].minimized then
+				--			_M.altTabTable[i].client.minimized = true
+				--		end
+				--		_M.altTabTable[i].client.opacity = _M.altTabTable[i].opacity
+				--	end
 					
 
 					keygrabber.stop()
 				
                 -- Pressed tab
 				elseif key == key_switch and event == "press" then
+                    if not _M.preview_wbox.visible then
+                        showPreview()
+                    end
 					if gears.table.hasitem(mod, mod_key2) then
 						-- Move to previous client on Shift-Tab
 						cyclePreview(-1)

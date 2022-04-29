@@ -114,7 +114,7 @@ watch(
     end
     charge = charge / capacity
 
-    if (charge >= 0 and charge < 15) then
+    if (charge >= 0 and charge < 20) then
       if status ~= 'Charging' and os.difftime(os.time(), last_battery_check) > 300 then
         -- if 5 minutes have elapsed since the last warning
         last_battery_check = _G.time()
@@ -136,7 +136,6 @@ watch(
 
     widget.icon:set_image(PATH_TO_ICONS .. batteryIconName .. '.svg')
     -- Update popup text
-    --battery_popup.text = string.gsub(stdout, '\n$', '')
     battery_popup.text = string.gsub(stdout, '\n$', '')
     collectgarbage('collect')
   end,
