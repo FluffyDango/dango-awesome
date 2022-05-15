@@ -7,7 +7,6 @@ local beautiful = require('beautiful')
 -- Theme
 beautiful.init(require('theme'))
 
-
 -- Layout
 require('layout')
 
@@ -21,6 +20,7 @@ require('module.auto-start')
 require('module.exit-screen')
 --require('module.quake-terminal')
 --require('module.screenshot')
+require('module.desktop')
 
 -- Setup all configurations
 require('configuration.client')

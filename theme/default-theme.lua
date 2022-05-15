@@ -22,7 +22,6 @@ local awesome_overrides =
   function(theme)
   theme.dir = os.getenv('HOME') .. '/.config/awesome/theme'
   theme.icons = theme.dir .. '/icons/'
-  --theme.wallpaper = theme.dir .. '/wallpapers/DarkCyan.png'
   theme.wallpaper = '#e0e0e0'
   theme.font = 'Roboto medium 10'
   theme.title_font = 'Roboto medium 14'
@@ -40,7 +39,7 @@ local awesome_overrides =
 
   -- Borders
 
-  theme.border_width = dpi(2)
+  theme.border_width = dpi(0)
   theme.border_normal = theme.background.hue_800
   theme.border_focus = theme.primary.hue_300
   theme.border_marked = '#CC9393'
@@ -53,7 +52,6 @@ local awesome_overrides =
   -- Tooltips
   --theme.tooltip_bg = '#232323'
   theme.tooltip_bg = '#5c5c5cCC'
-  --theme.tooltip_border_color = '#232323'
   theme.tooltip_border_width = 0
   theme.tooltip_shape = function(cr, w, h)
     gears.shape.rounded_rect(cr, w, h, dpi(6))
@@ -68,7 +66,6 @@ local awesome_overrides =
 
   theme.taglist_bg_empty = theme.background.hue_800
   theme.taglist_bg_occupied = theme.background.hue_800
-  theme.taglist_bg_urgent = "0" -- don't draw urgent windows
   theme.taglist_bg_urgent =
     'linear:0,0:' ..
     dpi(40) ..
