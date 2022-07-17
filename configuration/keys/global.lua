@@ -1,4 +1,5 @@
 local awful = require('awful')
+local gears = require('gears')
 require('awful.autofocus')
 local beautiful = require('beautiful')
 local hotkeys_popup = require('awful.hotkeys_popup').widget
@@ -16,7 +17,7 @@ local Xscreen2 = 'auto'
 
 -- Key bindings
 local globalKeys =
-  awful.util.table.join(
+  gears.table.join(
   -------------------------------  AWESOME  ---------------------------------------------------
   awful.key({modkey}, 'F1', hotkeys_popup.show_help, {description = 'Show help', group = 'awesome'}),
   
@@ -417,7 +418,7 @@ for i = 1, 9 do
     descr_toggle_focus = {description = 'toggle focused client on tag #', group = 'tag'}
   end
   globalKeys =
-    awful.util.table.join(
+    gears.table.join(
     globalKeys,
     -- View tag only.
     awful.key(

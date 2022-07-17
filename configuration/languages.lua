@@ -1,4 +1,5 @@
 return {
   'us',
-  'lt'
+  'lt',
+  'es'
 }

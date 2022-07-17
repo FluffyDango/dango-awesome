@@ -157,7 +157,7 @@ end
 
 
 local tasklist_buttons =
-  awful.util.table.join(
+  gears.table.join(
   awful.button(
     {},
     1,
@@ -184,21 +184,21 @@ local tasklist_buttons =
     function(c)
       c.kill(c)
     end
-  ),
-  awful.button(
-    {},
-    4,
-    function()
-      awful.client.focus.byidx(1)
-    end
-  ),
-  awful.button(
-    {},
-    5,
-    function()
-      awful.client.focus.byidx(-1)
-    end
   )
+  --awful.button(
+  --  {},
+  --  4,
+  --  function()
+  --    awful.client.focus.byidx(1)
+  --  end
+  --),
+  --awful.button(
+  --  {},
+  --  5,
+  --  function()
+  --    awful.client.focus.byidx(-1)
+  --  end
+  --)
 )
 
 local TaskList = function(s)

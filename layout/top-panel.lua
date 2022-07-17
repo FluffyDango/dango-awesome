@@ -11,7 +11,7 @@ local dpi = require('beautiful').xresources.apply_dpi
 local icons = require('theme.icons')
 local languages = require('configuration.languages')
 local battery = require('widget.battery')
-local todo = require('widget.todo-widget.todo')
+--local todo = require('widget.todo-widget.todo')
 
 local langIndex = 1
 function languages:inc(i)
@@ -161,7 +161,7 @@ local TopPanel = function(s)
       nil,
       {
         layout = wibox.layout.fixed.horizontal,
-        todo,
+        --todo,
         KeyBoard(s),
         wibox.container.margin(systray, dpi(6), dpi(3), dpi(6), dpi(3)),
         battery,
